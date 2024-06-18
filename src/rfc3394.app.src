@@ -1,0 +1,14 @@
+{application, rfc3394,
+ [{description, "Advanced Encryption Standard (AES) Key Wrap Algorithm"},
+  {vsn, git},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {licenses, ["Apache-2.0"]},
+  {links, []}
+ ]}.
