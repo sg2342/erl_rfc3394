@@ -1,6 +1,6 @@
 {application, rfc3394,
  [{description, "Advanced Encryption Standard (AES) Key Wrap Algorithm"},
-  {vsn, git},
+  {vsn, "1.0.0"},
   {registered, []},
   {applications,
    [kernel,
@@ -10,5 +10,5 @@
   {modules, []},
 
   {licenses, ["Apache-2.0"]},
-  {links, []}
+  {links, [{"GitHub", "https://github.com/sg2342/erl_rfc3394"}]}
  ]}.
