@@ -6,61 +6,56 @@ as defined in https://datatracker.ietf.org/doc/html/rfc3394.html.
 -export([wrap/2, unwrap/2]).
 -export([wrap/3, unwrap/3]).
 
+-doc "128 bit or 192 bit or 256 bit AES key".
+-type kek() :: <<_:128>> | <<_:192>> | <<_:256>>.
+
+-doc "64 bit Initial Value".
+-type iv() :: <<_:64>>.
+
+-doc "at least one 64 bit block of plaintext".
+-type keyData() :: <<_:64, _:_*64>>.
+
+-doc "at least two 64 bit blocks ciphertext".
+-type ciphertext() :: <<_:128, _:_*64>>.
+
+-export_type([kek/0, iv/0, keyData/0, ciphertext/0]).
+
+
 %%% https://datatracker.ietf.org/doc/html/rfc3394.txt#section-2.2.3.1
 -define(DEFAULT_IV, <<16#A6, 16#A6, 16#A6, 16#A6, 16#A6, 16#A6, 16#A6, 16#A6>>).
 
 -doc """
 wrap `KeyData` with `KEK` and default initial value (`IV`)
 
-`KeyData` is a binary of at least 16 bytes,`byte_size(KeyData)`
-must be divisible by 8.
-
-`KEK` is a 128 bit or 192 bit or 256 bit AES key (binary).
-
 the resulting `Ciphertext` 8 bytes larger than `KeyData`
 """.
--spec wrap(KeyData :: binary(), KEK :: binary()) ->
-	  Ciphertext :: binary().
+-spec wrap(keyData(), kek()) -> ciphertext().
 wrap(KeyData, KEK) -> wrap(KeyData, KEK, ?DEFAULT_IV).
 
 -doc """
 unwrap `Ciphertext` with `KEK` and check `KeyData` integrity with default
 initial value (`IV`)
 
-`Ciphertext` is a binary of at least 24 bytes, `byte_size(Ciphertext)`
-must be divisible by 8.
-
-`KEK` is a 128 bit or 192 bit or 256 bit AES key (binary).
-
-the resulting `KeyData` 8 smaller than `Ciphertext`
+the resulting `KeyData` 8 bytes smaller than `Ciphertext`
 
 Will raise an exception of class `error` with reason `iv_mismatch` if the
 integrity check fails.
 """.
--spec unwrap(Ciphertext :: binary(), KEK :: binary()) ->
-	  KeyData :: binary().
+-spec unwrap(ciphertext(), kek()) -> keyData().
 unwrap(Ciphertext, KEK) -> unwrap(Ciphertext, KEK, ?DEFAULT_IV).
 
 
 -doc """
 wrap `KeyData` with `KEK` and `IV`
 
-`KeyData` is a binary of at least 16 bytes,`byte_size(KeyData)`
-must be divisible by 8.
-
-`KEK` is a 128 bit or 192 bit or 256 bit AES key (binary).
-
-`IV` is a 8 byte binary.
-
 the resulting `Ciphertext` 8 bytes larger than `KeyData`
 
 see: https://datatracker.ietf.org/doc/html/rfc3394.txt#section-2.2.1
 """.
--spec wrap(KeyData :: binary(), KEK :: binary(), IV :: binary()) ->
-	  Ciphertext :: binary().
+-spec wrap(keyData(), kek(), iv()) -> ciphertext().
 wrap(KeyData, KEK, <<A:64>>) when
       is_binary(KeyData), (byte_size(KeyData) rem 8) == 0,
-      byte_size(KeyData) >= 16,
+      byte_size(KeyData) >= 8,
       is_binary(KEK),
       ((byte_size(KEK) == 16) orelse (byte_size(KEK) == 24)
        orelse (byte_size(KEK) == 32)) ->
@@ -81,14 +76,7 @@ wrap2([I | T], JxN, KEK, {A, R}) ->
 -doc """
 unwrap `Ciphertext` with `KEK` and check `KeyData` integrity with `IV`
 
-`Ciphertext` is a binardf of at least 24 bytes, `byte_size(Ciphertext)`
-must be divisible by 8.
-
-`KEK` is a 128 bit or 192 bit or 256 bit AES key (binary).
-
-`IV` is a 8 byte binary.
-
-the resulting `KeyData` 8 smaller than `Ciphertext`
+the resulting `KeyData` 8 bytes smaller than `Ciphertext`
 
 Will raise an exception of class `error` with reason `iv_mismatch` if the
 integrity check fails.
@@ -96,10 +84,9 @@ integrity check fails.
 see: https://datatracker.ietf.org/doc/html/rfc3394.txt#section-2.2.2 and
 https://datatracker.ietf.org/doc/html/rfc3394.txt#section-2.2.3
 """.
--spec unwrap(Ciphertext :: binary(), KEK :: binary(), IV :: binary()) ->
-	  KeyData :: binary().
+-spec unwrap(ciphertext(), kek(), iv()) -> keyData().
 unwrap(<<A:64, _/binary>> = Ciphertext, KEK, IV) when
-      (byte_size(Ciphertext) rem 8) == 0, byte_size(Ciphertext) >= 24,
+      (byte_size(Ciphertext) rem 8) == 0, byte_size(Ciphertext) >= 16,
       is_binary(IV), byte_size(IV) == 8, is_binary(KEK),
       ((byte_size(KEK) == 16) orelse (byte_size(KEK) == 24)
        orelse (byte_size(KEK) == 32)) ->
