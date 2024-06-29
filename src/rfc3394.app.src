@@ -2,12 +2,9 @@
  [{description, "Advanced Encryption Standard (AES) Key Wrap Algorithm"},
   {vsn, "1.0.1"},
   {registered, []},
-  {applications,
-   [kernel,
-    stdlib
-   ]},
-  {env,[]},
-  {modules, []},
+  {applications, [crypto, kernel, stdlib]},
+  {env, []},
+  {modules, [rfc3394]},
 
   {licenses, ["Apache-2.0"]},
   {links, [{"GitHub", "https://github.com/sg2342/erl_rfc3394"}]}
