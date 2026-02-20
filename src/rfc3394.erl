@@ -54,11 +54,13 @@ see: https://datatracker.ietf.org/doc/html/rfc3394.txt#section-2.2.1
 """.
 -spec wrap(keyData(), kek(), iv()) -> ciphertext().
 wrap(KeyData, KEK, <<A:64>>) when
-      is_binary(KeyData), (byte_size(KeyData) rem 8) == 0,
-      byte_size(KeyData) >= 8,
-      is_binary(KEK),
-      ((byte_size(KEK) == 16) orelse (byte_size(KEK) == 24)
-       orelse (byte_size(KEK) == 32)) ->
+      is_binary(KeyData)
+      andalso (byte_size(KeyData) rem 8) == 0
+      andalso byte_size(KeyData) >= 8
+      andalso is_binary(KEK)
+      andalso ((byte_size(KEK) == 16)
+	       orelse (byte_size(KEK) == 24)
+	       orelse (byte_size(KEK) == 32)) ->
     wrap1(lists:seq(0, 5), byte_size(KeyData) div 8, KEK, {A, KeyData}).
 
 wrap1([], _N, _KEK, {A, R}) -> <<A:64, R/binary>>;
@@ -86,10 +88,14 @@ https://datatracker.ietf.org/doc/html/rfc3394.txt#section-2.2.3
 """.
 -spec unwrap(ciphertext(), kek(), iv()) -> keyData().
 unwrap(<<A:64, _/binary>> = Ciphertext, KEK, IV) when
-      (byte_size(Ciphertext) rem 8) == 0, byte_size(Ciphertext) >= 16,
-      is_binary(IV), byte_size(IV) == 8, is_binary(KEK),
-      ((byte_size(KEK) == 16) orelse (byte_size(KEK) == 24)
-       orelse (byte_size(KEK) == 32)) ->
+      (byte_size(Ciphertext) rem 8) == 0
+      andalso byte_size(Ciphertext) >= 16
+      andalso is_binary(IV)
+      andalso byte_size(IV) == 8
+      andalso is_binary(KEK)
+      andalso ((byte_size(KEK) == 16)
+	       orelse (byte_size(KEK) == 24)
+	       orelse (byte_size(KEK) == 32)) ->
     N = (byte_size(Ciphertext) div 8) - 1,
     case unwrap1([5, 4, 3, 2, 1, 0], N, KEK, {A, Ciphertext}) of
 	<<IV:(byte_size(IV))/binary, KeyData/binary>> -> KeyData;
