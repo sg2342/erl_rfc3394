@@ -27,7 +27,7 @@ as defined in https://datatracker.ietf.org/doc/html/rfc3394.html.
 -doc """
 wrap `KeyData` with `KEK` and default initial value (`IV`)
 
-the resulting `Ciphertext` 8 bytes larger than `KeyData`
+the resulting `Ciphertext` is 8 bytes larger than `KeyData`
 """.
 -spec wrap(keyData(), kek()) -> ciphertext().
 wrap(KeyData, KEK) -> wrap(KeyData, KEK, ?DEFAULT_IV).
@@ -36,7 +36,7 @@ wrap(KeyData, KEK) -> wrap(KeyData, KEK, ?DEFAULT_IV).
 unwrap `Ciphertext` with `KEK` and check `KeyData` integrity with default
 initial value (`IV`)
 
-the resulting `KeyData` 8 bytes smaller than `Ciphertext`
+the resulting `KeyData` is 8 bytes smaller than `Ciphertext`
 
 Will raise an exception of class `error` with reason `iv_mismatch` if the
 integrity check fails.
@@ -48,7 +48,7 @@ unwrap(Ciphertext, KEK) -> unwrap(Ciphertext, KEK, ?DEFAULT_IV).
 -doc """
 wrap `KeyData` with `KEK` and `IV`
 
-the resulting `Ciphertext` 8 bytes larger than `KeyData`
+the resulting `Ciphertext` is 8 bytes larger than `KeyData`
 
 see: https://datatracker.ietf.org/doc/html/rfc3394.txt#section-2.2.1
 """.
@@ -76,7 +76,7 @@ wrap2([I | T], JxN, KEK, {A, R}) ->
 -doc """
 unwrap `Ciphertext` with `KEK` and check `KeyData` integrity with `IV`
 
-the resulting `KeyData` 8 bytes smaller than `Ciphertext`
+the resulting `KeyData` is 8 bytes smaller than `Ciphertext`
 
 Will raise an exception of class `error` with reason `iv_mismatch` if the
 integrity check fails.
